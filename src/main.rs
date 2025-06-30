@@ -38,9 +38,15 @@ async fn main() {
         .route("/message/verify", post(verify_message))
         .route("/send/sol", post(send_sol))
         .route("/send/token", post(send_token));
+    
+    let port: u16 = std::env::var("PORT")
+        .unwrap_or_else(|_| "3000".to_string())
+        .parse()
+        .expect("PORT must be a number");
 
+    let addr = SocketAddr::from(([0, 0, 0, 0], port));
     // Run the server
-    let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
+    // let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
     tracing::debug!("listening on {}", addr);
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
     axum::serve(listener, app.into_make_service())
